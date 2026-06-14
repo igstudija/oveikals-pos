@@ -1,0 +1,270 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: #000;
+  color: #111;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---------- Slideshow ---------- */
+.show {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+  cursor: none;
+}
+
+.show__slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.show__slide.is-active {
+  opacity: 1;
+}
+
+.show__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.show__empty {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.show__fs {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: opacity 0.2s;
+}
+.show:hover .show__fs {
+  opacity: 1;
+}
+
+/* ---------- Admin ---------- */
+.admin {
+  min-height: 100vh;
+  background: #f4f5f7;
+  color: #1a1a1a;
+  padding: 24px;
+}
+
+.admin__inner {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.admin__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.admin h1 {
+  font-size: 22px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e3e5e8;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin-bottom: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #1d4ed8;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.btn--ghost {
+  background: #eef0f3;
+  color: #1a1a1a;
+}
+.btn--ghost:hover {
+  background: #e3e5e8;
+}
+.btn--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.btn--danger:hover {
+  background: #fecaca;
+}
+.btn--sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='number'] {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.slides {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.slide-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #e3e5e8;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+
+.slide-item__thumb {
+  width: 120px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.slide-item__meta {
+  flex: 1;
+  min-width: 0;
+}
+.slide-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slide-item__sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.slide-item__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f5f7;
+}
+.login__box {
+  background: #fff;
+  border: 1px solid #e3e5e8;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+.login__box h1 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.msg {
+  font-size: 13px;
+  margin-top: 10px;
+}
+.msg--err {
+  color: #b91c1c;
+}
+.msg--ok {
+  color: #15803d;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+.dim {
+  opacity: 0.45;
+}
