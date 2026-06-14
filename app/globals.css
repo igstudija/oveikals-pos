@@ -58,25 +58,6 @@ a {
   padding: 2rem;
 }
 
-.show__fs {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  opacity: 0.25;
-  transition: opacity 0.2s;
-}
-.show:hover .show__fs {
-  opacity: 1;
-}
-
 /* ---------- Admin ---------- */
 .admin {
   min-height: 100vh;

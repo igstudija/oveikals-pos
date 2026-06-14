@@ -80,15 +80,6 @@ export default function Slideshow() {
           )}
         </div>
       ))}
-      <button
-        className="show__fs"
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleFullscreen();
-        }}
-      >
-        ⛶ Pilnekrāns
-      </button>
     </div>
   );
 }
