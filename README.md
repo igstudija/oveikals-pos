@@ -7,15 +7,15 @@ Veikala ekrānu slaidrāde ar admin paneli. Next.js + MongoDB, izvietota uz Verc
 
 ## Vides mainīgie (Vercel → Settings → Environment Variables)
 
-| Mainīgais | Apraksts |
-|-----------|----------|
-| `MONGODB_URI` | MongoDB Atlas savienojuma virkne |
-| `MONGODB_DB` | Datu bāzes nosaukums (nav obligāts) |
-| `ADMIN_PASSWORD` | Admin paneļa parole |
-| `AUTH_SECRET` | Gara nejauša virkne sīkdatņu parakstīšanai |
-| `NEXT_PUBLIC_BASE_PATH` | `/pos` (vai tukšs, ja saknē) |
+| Mainīgais               | Apraksts                                   |
+| ----------------------- | ------------------------------------------ |
+| `MONGODB_URI`           | MongoDB Atlas savienojuma virkne           |
+| `MONGODB_DB`            | Datu bāzes nosaukums (nav obligāts)        |
+| `ADMIN_PASSWORD`        | Admin paneļa parole                        |
+| `AUTH_SECRET`           | Gara nejauša virkne sīkdatņu parakstīšanai |
+| `NEXT_PUBLIC_BASE_PATH` | `/pos` (vai tukšs, ja saknē)               |
 
-## Lokāli
+## Lokāli..
 
 ```bash
 npm install
