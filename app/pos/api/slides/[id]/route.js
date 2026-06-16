@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { getCollections } from '../../../../lib/mongodb';
-import { isAuthed } from '../../../../lib/auth';
-import { deleteFromBunny } from '../../../../lib/bunny';
+import { getCollections } from '../../../../../lib/mongodb';
+import { isAuthed } from '../../../../../lib/auth';
+import { deleteFromBunny } from '../../../../../lib/bunny';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

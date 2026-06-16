@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { createResetToken, isAllowedEmail } from '../../../../lib/auth';
-import { sendResetEmail } from '../../../../lib/email';
+import { createResetToken, isAllowedEmail } from '../../../../../lib/auth';
+import { sendResetEmail } from '../../../../../lib/email';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

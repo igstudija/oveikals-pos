@@ -4,7 +4,7 @@ import {
   consumeResetToken,
   setUserPassword,
   setAuthCookie,
-} from '../../../../lib/auth';
+} from '../../../../../lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

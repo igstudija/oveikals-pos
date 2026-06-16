@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCollections } from '../../../lib/mongodb';
-import { isAuthed } from '../../../lib/auth';
-import { uploadToBunny } from '../../../lib/bunny';
-import { imageSize } from '../../../lib/imagesize';
-import { aspectOk, ASPECT_LABEL } from '../../../lib/aspect';
+import { getCollections } from '../../../../lib/mongodb';
+import { isAuthed } from '../../../../lib/auth';
+import { uploadToBunny } from '../../../../lib/bunny';
+import { imageSize } from '../../../../lib/imagesize';
+import { aspectOk, ASPECT_LABEL } from '../../../../lib/aspect';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

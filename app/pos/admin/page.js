@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { aspectOk, ASPECT_LABEL } from '../../lib/aspect';
+import { aspectOk, ASPECT_LABEL } from '../../../lib/aspect';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '/pos';
 

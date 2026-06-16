@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollections } from '../../../../lib/mongodb';
+import { getCollections } from '../../../../../lib/mongodb';
 
 export const runtime = 'nodejs';
 

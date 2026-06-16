@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyLogin, setAuthCookie } from '../../../lib/auth';
+import { verifyLogin, setAuthCookie } from '../../../../lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
