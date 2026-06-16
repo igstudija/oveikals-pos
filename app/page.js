@@ -71,9 +71,9 @@ export default function Slideshow() {
     <div className="show" onClick={toggleFullscreen}>
       {slides.map((s, i) => (
         <div key={s.id} className={`show__slide ${i === index ? 'is-active' : ''}`}>
-          {s.imageId && (
+          {(s.imageUrl || s.imageId) && (
             <img
-              src={`${BASE}/api/image/${s.imageId}`}
+              src={s.imageUrl || `${BASE}/api/image/${s.imageId}`}
               alt={s.name || ''}
               draggable={false}
             />

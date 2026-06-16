@@ -25,7 +25,8 @@ export async function GET() {
       name: d.name || '',
       active: d.active !== false,
       order: d.order ?? 0,
-      imageId: d.imageId ? d.imageId.toString() : null,
+      imageUrl: d.imageUrl || null,
+      imageId: d.imageId ? d.imageId.toString() : null, // legacy (MongoDB)
     })),
     intervalSec: setting?.intervalSec ?? 7,
   });

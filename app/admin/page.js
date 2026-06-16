@@ -1,8 +1,26 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { aspectOk, ASPECT_LABEL } from '../../lib/aspect';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '/pos';
+
+// Read an image file's pixel dimensions in the browser.
+function readImageSize(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
 
 export default function Admin() {
   const [authed, setAuthed] = useState(null); // null = checking
@@ -42,44 +60,120 @@ export default function Admin() {
 }
 
 function Login({ onSuccess }) {
+  const [mode, setMode] = useState('login'); // 'login' | 'forgot'
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
+  const [info, setInfo] = useState('');
   const [busy, setBusy] = useState(false);
 
-  async function submit(e) {
+  async function submitLogin(e) {
     e.preventDefault();
     setBusy(true);
     setErr('');
     const res = await fetch(`${BASE}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email, password }),
     });
     setBusy(false);
     if (res.ok) {
       onSuccess();
     } else {
-      setErr('Nepareiza parole');
+      setErr('Nepareizs e-pasts vai parole');
     }
+  }
+
+  async function submitForgot(e) {
+    e.preventDefault();
+    setBusy(true);
+    setErr('');
+    setInfo('');
+    await fetch(`${BASE}/api/password/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    setBusy(false);
+    setInfo(
+      'Ja šis e-pasts ir reģistrēts, nosūtījām saiti paroles atjaunošanai. Pārbaudi pastu.'
+    );
+  }
+
+  if (mode === 'forgot') {
+    return (
+      <div className="login">
+        <form className="login__box" onSubmit={submitForgot}>
+          <h1>Atjaunot paroli</h1>
+          <p className="hint">Ievadi savu e-pastu — nosūtīsim atjaunošanas saiti.</p>
+          <div className="field">
+            <input
+              type="email"
+              placeholder="E-pasts"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              autoFocus
+            />
+          </div>
+          <button className="btn" style={{ width: '100%' }} disabled={busy}>
+            {busy ? 'Sūta…' : 'Nosūtīt saiti'}
+          </button>
+          {info && <div className="msg msg--ok">{info}</div>}
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => {
+              setMode('login');
+              setErr('');
+              setInfo('');
+            }}
+          >
+            ← Atpakaļ uz pieslēgšanos
+          </button>
+        </form>
+      </div>
+    );
   }
 
   return (
     <div className="login">
-      <form className="login__box" onSubmit={submit}>
+      <form className="login__box" onSubmit={submitLogin}>
         <h1>Oveikals POS — admin</h1>
+        <div className="field">
+          <input
+            type="email"
+            placeholder="E-pasts"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+            autoFocus
+          />
+        </div>
         <div className="field">
           <input
             type="password"
             placeholder="Parole"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoFocus
+            autoComplete="current-password"
           />
         </div>
         <button className="btn" style={{ width: '100%' }} disabled={busy}>
           {busy ? 'Pārbauda…' : 'Ieiet'}
         </button>
         {err && <div className="msg msg--err">{err}</div>}
+        <button
+          type="button"
+          className="link-btn"
+          onClick={() => {
+            setMode('forgot');
+            setErr('');
+            setInfo('');
+          }}
+        >
+          Aizmirsi paroli?
+        </button>
       </form>
     </div>
   );
@@ -92,6 +186,31 @@ function Dashboard({ slides, intervalSec, reload, setIntervalSec }) {
   const [msg, setMsg] = useState('');
   const [savedInterval, setSavedInterval] = useState('');
   const fileRef = useRef(null);
+
+  async function pickFile(e) {
+    setMsg('');
+    const f = e.target.files?.[0] || null;
+    if (!f) {
+      setFile(null);
+      return;
+    }
+    const size = await readImageSize(f);
+    if (!size) {
+      setMsg('Neizdevās nolasīt attēlu. Atļauti: PNG, JPG, WEBP, GIF.');
+      setFile(null);
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
+    if (!aspectOk(size.width, size.height)) {
+      setMsg(
+        `Nepareizas proporcijas (${size.width}×${size.height}). Vajadzīgs ${ASPECT_LABEL} formāts.`
+      );
+      setFile(null);
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
+    setFile(f);
+  }
 
   async function upload(e) {
     e.preventDefault();
@@ -110,7 +229,8 @@ function Dashboard({ slides, intervalSec, reload, setIntervalSec }) {
       setMsg('Pievienots!');
       reload();
     } else {
-      setMsg('Kļūda augšupielādējot');
+      const d = await res.json().catch(() => ({}));
+      setMsg(d.error || 'Kļūda augšupielādējot');
     }
   }
 
@@ -178,13 +298,16 @@ function Dashboard({ slides, intervalSec, reload, setIntervalSec }) {
           <h2>Pievienot slaidu</h2>
           <form onSubmit={upload}>
             <div className="field">
-              <label>Attēls (no datora)</label>
+              <label>Attēls (no datora) — formāts {ASPECT_LABEL}</label>
               <input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={pickFile}
               />
+              <p className="hint">
+                Atļautas tikai {ASPECT_LABEL} proporcijas (piem. 1024×768, 1920×1440).
+              </p>
             </div>
             <div className="field">
               <label>Nosaukums (nav obligāts)</label>
@@ -199,7 +322,13 @@ function Dashboard({ slides, intervalSec, reload, setIntervalSec }) {
               <button className="btn" disabled={busy || !file}>
                 {busy ? 'Augšupielādē…' : 'Pievienot'}
               </button>
-              {msg && <span className="msg msg--ok">{msg}</span>}
+              {msg && (
+                <span
+                  className={`msg ${msg === 'Pievienots!' ? 'msg--ok' : 'msg--err'}`}
+                >
+                  {msg}
+                </span>
+              )}
             </div>
           </form>
         </div>
@@ -234,10 +363,10 @@ function Dashboard({ slides, intervalSec, reload, setIntervalSec }) {
                 key={s.id}
                 className={`slide-item ${s.active ? '' : 'dim'}`}
               >
-                {s.imageId && (
+                {(s.imageUrl || s.imageId) && (
                   <img
                     className="slide-item__thumb"
-                    src={`${BASE}/api/image/${s.imageId}`}
+                    src={s.imageUrl || `${BASE}/api/image/${s.imageId}`}
                     alt=""
                   />
                 )}

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { ObjectId, Binary } from 'mongodb';
 import { getCollections } from '../../../lib/mongodb';
 import { isAuthed } from '../../../lib/auth';
+import { uploadToBunny } from '../../../lib/bunny';
+import { imageSize } from '../../../lib/imagesize';
+import { aspectOk, ASPECT_LABEL } from '../../../lib/aspect';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,7 +23,8 @@ export async function GET() {
   const list = docs.map((d) => ({
     id: d._id.toString(),
     name: d.name || '',
-    imageId: d.imageId ? d.imageId.toString() : null,
+    imageUrl: d.imageUrl || null,
+    imageId: d.imageId ? d.imageId.toString() : null, // legacy (MongoDB)
   }));
 
   return NextResponse.json(
@@ -36,7 +39,7 @@ export async function POST(req) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const { slides, images } = await getCollections();
+  const { slides } = await getCollections();
   const form = await req.formData();
   const file = form.get('file');
   const name = (form.get('name') || '').toString().trim();
@@ -49,11 +52,34 @@ export async function POST(req) {
   const buffer = Buffer.from(arrayBuffer);
   const contentType = file.type || 'image/png';
 
-  const imageDoc = await images.insertOne({
-    data: new Binary(buffer),
-    contentType,
-    createdAt: new Date(),
-  });
+  // Enforce the required aspect ratio (proportion only, any size).
+  const size = imageSize(buffer);
+  if (!size) {
+    return NextResponse.json(
+      { error: 'Neizdevās nolasīt attēla izmēru. Atļauti: PNG, JPG, WEBP, GIF.' },
+      { status: 400 }
+    );
+  }
+  if (!aspectOk(size.width, size.height)) {
+    return NextResponse.json(
+      {
+        error: `Nepareizas proporcijas (${size.width}×${size.height}). Vajadzīgs ${ASPECT_LABEL} formāts.`,
+      },
+      { status: 400 }
+    );
+  }
+
+  // Store the image in BunnyCDN; serve it from the linked Pull Zone.
+  let uploaded;
+  try {
+    uploaded = await uploadToBunny(buffer, { filename: file.name, contentType });
+  } catch (e) {
+    console.error('Bunny upload error:', e);
+    return NextResponse.json(
+      { error: 'Neizdevās augšupielādēt attēlu' },
+      { status: 502 }
+    );
+  }
 
   // place new slide at the end
   const last = await slides
@@ -66,7 +92,8 @@ export async function POST(req) {
 
   const slideDoc = await slides.insertOne({
     name: name || file.name || 'Slaids',
-    imageId: imageDoc.insertedId,
+    imageUrl: uploaded.url,
+    imagePath: uploaded.path,
     active: true,
     order: nextOrder,
     createdAt: new Date(),

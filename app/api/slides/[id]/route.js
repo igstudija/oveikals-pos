@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getCollections } from '../../../../lib/mongodb';
 import { isAuthed } from '../../../../lib/auth';
+import { deleteFromBunny } from '../../../../lib/bunny';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -46,8 +47,11 @@ export async function DELETE(req, { params }) {
 
   const { slides, images } = await getCollections();
   const slide = await slides.findOne({ _id: id });
+  if (slide?.imagePath) {
+    await deleteFromBunny(slide.imagePath); // Bunny-stored image
+  }
   if (slide?.imageId) {
-    await images.deleteOne({ _id: slide.imageId });
+    await images.deleteOne({ _id: slide.imageId }); // legacy MongoDB image
   }
   await slides.deleteOne({ _id: id });
   return NextResponse.json({ ok: true });
